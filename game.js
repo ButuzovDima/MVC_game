@@ -24,7 +24,7 @@
         },
 
         // Функция showAsteroid() - если игрок промахнулся, отображает астероид
-        showAsteoid: function(id){
+        showAsteroid: function(id){
             let elAsteroid = document.getElementById(id);
             elAsteroid.setAttribute('class', 'asteroid');
         },
@@ -38,3 +38,65 @@
         }
     };
 /*------------------------end view---------------------*/
+
+/*------------------------begin model---------------------*/
+    let model = {
+        sizeSpace: 	  7,	// Размер карты
+        numShips: 	  6,	// Кол-во флотилий
+        lengthShips:  3,	// Размеры флотилии
+        destroyShips: 0,	// Уничтоженные флотилии
+
+        spaceships: [
+            { position: ["0", "0", "0"], damage: ["", "", ""], color: "red"  },
+            { position: ["0", "0", "0"], damage: ["", "", ""], color: "blue" },
+            { position: ["0", "0", "0"], damage: ["", "", ""], color: "red"  },
+            { position: ["0", "0", "0"], damage: ["", "", ""], color: "blue" },
+            { position: ["0", "0", "0"], damage: ["", "", ""], color: "red"  },
+            { position: ["0", "0", "0"], damage: ["", "", ""], color: "blue" }
+        ],
+
+        // Функция shot() - производит выстрел и проверку на попадание
+        shot: function(id){
+            for(let i = 0; i < this.numShips; i++){
+                let spaceship = this.spaceships[i];
+                let posDamage = spaceship.position.indexOf(id);
+
+                //проверяем есть ли корабль на карте
+                if(posDamage >= 0){
+                    if(spaceship.damage[posDamage] === 'loss'){
+                        view.showMsg('Этот корабль уже подбит');
+                        return true;
+                    }
+
+                    spaceship.damage[posDamage] = 'loss';
+                    let color = spaceship.color;
+                    view.showShip(id, color);
+                    view.showMsg('Попадание');
+
+                    if(this.checkDestroyedShip(spaceship)){
+                        view.showMsg('Флотилия из 3-х кораблей потоплена');
+                        this.destroyShips++;
+                        return true;
+                    }
+
+                    return true;
+                }
+            }
+
+            view.showAsteroid(id);
+            view.showMsg('Промах');
+            return false;
+        },
+
+        // Функция checkDestroyedShip() - проверяет полностью подбиты три корабля
+        checkDestroyedShip: function(ship){
+            for(let i = 0; i < this.lengthShips; i++){
+                if(ship.damage[i] === ''){
+                    return false;
+                }
+            }
+            return true;
+        }
+
+    };
+/*------------------------end model---------------------*/
